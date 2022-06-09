@@ -16,7 +16,8 @@
 #define PHY_CONTROL2_REG 0x1FU /*!< The PHY control two register. */
 
 /*! @brief Defines the PHY KSZ8081 ID number. */
-#define PHY_CONTROL_ID1 0x22U /*!< The PHY ID1 */
+//#define PHY_CONTROL_ID1 0x22U /*!< The PHY ID1 */
+#define PHY_CONTROL_ID1 0x2000	// DP83825 -ID1
 
 /*! @brief Defines the mask flag of operation mode in control registers */
 #define PHY_CTL2_REMOTELOOP_MASK    0x0004U /*!< The PHY remote loopback mask. */

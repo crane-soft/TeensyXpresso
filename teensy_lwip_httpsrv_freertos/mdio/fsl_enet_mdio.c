@@ -6,7 +6,7 @@
  */
 
 #include "fsl_enet_mdio.h"
-
+#include "fsl_debug_console.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -97,16 +97,20 @@ static status_t ENET_MDIO_Read(mdio_handle_t *handle, uint32_t phyAddr, uint32_t
     result = ENET_MDIO_WaitTransferOver(base);
     if (result != kStatus_Success)
     {
+    	//DbgConsole_Printf ("MDIO_RD failed\r\n");
         return result;
     }
 
     /* Get data from SMI register. */
-    *dataPtr = ENET_ReadSMIData(base);
+    uint16_t data = ENET_ReadSMIData(base);
 
     /* Clear SMI interrupt event. */
     ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
+    //DbgConsole_Printf ("MDIO_RD %d,%02X=%04X\r\n",phyAddr,devAddr,data);
 
+    *dataPtr = data;
     return result;
+
 }
 
 #if defined(FSL_FEATURE_ENET_HAS_EXTEND_MDIO) && FSL_FEATURE_ENET_HAS_EXTEND_MDIO
