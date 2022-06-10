@@ -1,6 +1,8 @@
-# TeensyXpresso
-Create Teensy 4.1 projects from MCUXpresso IDE
+# Teensy 4.1 Web Server Demo
 
-Creating a Teensy 4.1 program with MCUXpresso is quite simple. Just start with a RT1060-Evalutation-Kit project, make some pin changes and create a hexfile output. Download the hexfile with the teensy loader. The iLed-blinky example works out of the box.
+This Teensy 4.1 web server demo was created with MCUXpresso IDE. It's based on the evbkmimxrt1060-SDK  lwip demo project.
+Only some changes had to be made due to the different ethernet phys.
 
-You will find ready to use hexfiles in the teensy41 folder.
+ 
+
+
