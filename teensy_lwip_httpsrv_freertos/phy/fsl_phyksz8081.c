@@ -15,6 +15,10 @@
 #define PHY_CONTROL1_REG 0x1EU /*!< The PHY control one register. */
 #define PHY_CONTROL2_REG 0x1FU /*!< The PHY control two register. */
 
+// TI-DP83825 Register map
+#define PHY_RCSR_REG	0x17
+#define PHY_LEDCR_REG	0x18
+
 /*! @brief Defines the PHY KSZ8081 ID number. */
 //#define PHY_CONTROL_ID1 0x22U /*!< The PHY ID1 */
 #define PHY_CONTROL_ID1 0x2000	// DP83825 -ID1
@@ -67,67 +71,57 @@ status_t PHY_KSZ8081_Init(phy_handle_t *handle, const phy_config_t *config)
     handle->phyAddr = config->phyAddr;
 
     /* Check PHY ID. */
-    do
-    {
+    do {
         result = MDIO_Read(handle->mdioHandle, handle->phyAddr, PHY_ID1_REG, &regValue);
-        if (result != kStatus_Success)
-        {
+        if (result != kStatus_Success) {
             return result;
         }
         counter--;
     } while ((regValue != PHY_CONTROL_ID1) && (counter != 0U));
 
-    if (counter == 0U)
-    {
+    if (counter == 0U) {
         return kStatus_Fail;
     }
 
     /* Reset PHY. */
     result = MDIO_Write(handle->mdioHandle, handle->phyAddr, PHY_BASICCONTROL_REG, PHY_BCTL_RESET_MASK);
-    if (result == kStatus_Success)
-    {
-#if defined(FSL_FEATURE_PHYKSZ8081_USE_RMII50M_MODE)
-        result = MDIO_Read(handle->mdioHandle, handle->phyAddr, PHY_CONTROL2_REG, &regValue);
-        if (result != kStatus_Success)
-        {
+    if (result == kStatus_Success) {
+
+    	// https://github.com/PaulStoffregen/teensy41_ethernet/blob/master/t41ether/etherraw/etherraw.ino
+        result = MDIO_Write(handle->mdioHandle, handle->phyAddr, PHY_LEDCR_REG, 0x0280);
+        if (result != kStatus_Success) {
             return result;
         }
-        result =
-            MDIO_Write(handle->mdioHandle, handle->phyAddr, PHY_CONTROL2_REG, (regValue | PHY_CTL2_REFCLK_SELECT_MASK));
-        if (result != kStatus_Success)
-        {
+
+#if defined(FSL_FEATURE_PHYKSZ8081_USE_RMII50M_MODE)
+    	// https://github.com/PaulStoffregen/teensy41_ethernet/blob/master/t41ether/etherraw/etherraw.ino
+        result = MDIO_Write(handle->mdioHandle, handle->phyAddr, PHY_RCSR_REG, 0x81);
+        if (result != kStatus_Success) {
             return result;
         }
 #endif /* FSL_FEATURE_PHYKSZ8081_USE_RMII50M_MODE */
 
-        if (config->autoNeg)
-        {
+        if (config->autoNeg) {
             /* Set the auto-negotiation then start it. */
-            result =
-                MDIO_Write(handle->mdioHandle, handle->phyAddr, PHY_AUTONEG_ADVERTISE_REG,
+            result = MDIO_Write(handle->mdioHandle, handle->phyAddr, PHY_AUTONEG_ADVERTISE_REG,
                            (PHY_100BASETX_FULLDUPLEX_MASK | PHY_100BASETX_HALFDUPLEX_MASK |
                             PHY_10BASETX_FULLDUPLEX_MASK | PHY_10BASETX_HALFDUPLEX_MASK | PHY_IEEE802_3_SELECTOR_MASK));
-            if (result == kStatus_Success)
-            {
+            if (result == kStatus_Success) {
                 result = MDIO_Write(handle->mdioHandle, handle->phyAddr, PHY_BASICCONTROL_REG,
                                     (PHY_BCTL_AUTONEG_MASK | PHY_BCTL_RESTART_AUTONEG_MASK));
             }
-        }
-        else
-        {
+        } else {
             /* This PHY only supports 10/100M speed. */
             assert(config->speed <= kPHY_Speed100M);
 
             /* Disable isolate mode */
             result = MDIO_Read(handle->mdioHandle, handle->phyAddr, PHY_BASICCONTROL_REG, &regValue);
-            if (result != kStatus_Success)
-            {
+            if (result != kStatus_Success) {
                 return result;
             }
             regValue &= ~PHY_BCTL_ISOLATE_MASK;
             result = MDIO_Write(handle->mdioHandle, handle->phyAddr, PHY_BASICCONTROL_REG, regValue);
-            if (result != kStatus_Success)
-            {
+            if (result != kStatus_Success) {
                 return result;
             }
 
