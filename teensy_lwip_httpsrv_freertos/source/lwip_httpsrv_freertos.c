@@ -579,22 +579,78 @@ static void main_thread(void *arg)
     stack_init();
     http_server_socket_init();
 
+    // testing console input
+    char ch;
+    while (1)
+    {
+    	vTaskDelay(20);
+        ch = GETCHAR();
+        PUTCHAR(ch);
+    }
+
     vTaskDelete(NULL);
 }
+
+/*
+ * USB vcom specific
+ */
+
+
+#if defined(BOARD_USE_VIRTUALCOM) && (BOARD_USE_VIRTUALCOM > 0U)
+
+#include "usb_device_config.h"
+#include "usb.h"
+#include "usb_device.h"
+#include "fsl_component_serial_port_usb.h"
+#include "usb_phy.h"
+
+#define CONTROLLER_ID kSerialManager_UsbControllerEhci0
+
+void USB_DeviceClockInit(void)
+{
+#if defined(USB_DEVICE_CONFIG_EHCI) && (USB_DEVICE_CONFIG_EHCI > 0U)
+    usb_phy_config_struct_t phyConfig = {
+        BOARD_USB_PHY_D_CAL,
+        BOARD_USB_PHY_TXCAL45DP,
+        BOARD_USB_PHY_TXCAL45DM,
+    };
+#endif
+#if defined(USB_DEVICE_CONFIG_EHCI) && (USB_DEVICE_CONFIG_EHCI > 0U)
+    if (CONTROLLER_ID == kSerialManager_UsbControllerEhci0)
+    {
+        CLOCK_EnableUsbhs0PhyPllClock(kCLOCK_Usbphy480M, 480000000U);
+        CLOCK_EnableUsbhs0Clock(kCLOCK_Usb480M, 480000000U);
+    }
+    else
+    {
+        CLOCK_EnableUsbhs1PhyPllClock(kCLOCK_Usbphy480M, 480000000U);
+        CLOCK_EnableUsbhs1Clock(kCLOCK_Usb480M, 480000000U);
+    }
+    USB_EhciPhyInit(CONTROLLER_ID, BOARD_XTAL0_CLK_HZ, &phyConfig);
+#endif
+}
+
+#endif //BOARD_USE_VIRTUALCOM
 
 /*!
  * @brief Main function.
  */
 int main(void)
 {
-
     BOARD_ConfigMPU();
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
-    BOARD_InitDebugConsole();
     BOARD_InitModuleClock();
 
+#if defined(BOARD_USE_VIRTUALCOM) && (BOARD_USE_VIRTUALCOM > 0U)
+    USB_DeviceClockInit();
+    DbgConsole_Init((uint8_t)CONTROLLER_ID, (uint32_t)NULL, kSerialPort_UsbCdc, (uint32_t)NULL);
+#else
+    BOARD_InitDebugConsole();
+#endif
+
     PRINTF ("\r\nTeensy 4.1 lwip http server demo\r\n");
+
     IOMUXC_EnableMode(IOMUXC_GPR, kIOMUXC_GPR_ENET1TxClkOutputDir, true);
 
     /* pull up the ENET_INT before RESET. */

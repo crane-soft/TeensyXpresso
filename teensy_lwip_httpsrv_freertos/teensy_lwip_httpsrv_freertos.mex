@@ -42,11 +42,6 @@
                   <enableClock>true</enableClock>
                </options>
                <dependencies>
-                  <dependency resourceType="Peripheral" resourceId="LPUART1" description="Peripheral LPUART1 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
-                     <feature name="initialized" evaluation="equal">
-                        <data>true</data>
-                     </feature>
-                  </dependency>
                   <dependency resourceType="Peripheral" resourceId="ENET" description="Peripheral ENET is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
@@ -69,32 +64,6 @@
                   </dependency>
                </dependencies>
                <pins>
-                  <pin peripheral="LPUART1" signal="RX" pin_num="L14" pin_signal="GPIO_AD_B0_13">
-                     <pin_features>
-                        <pin_feature name="software_input_on" value="Disable"/>
-                        <pin_feature name="hysteresis_enable" value="Disable"/>
-                        <pin_feature name="pull_up_down_config" value="Pull_Down_100K_Ohm"/>
-                        <pin_feature name="pull_keeper_select" value="Keeper"/>
-                        <pin_feature name="pull_keeper_enable" value="Enable"/>
-                        <pin_feature name="open_drain" value="Disable"/>
-                        <pin_feature name="speed" value="MHZ_100"/>
-                        <pin_feature name="drive_strength" value="R0_6"/>
-                        <pin_feature name="slew_rate" value="Slow"/>
-                     </pin_features>
-                  </pin>
-                  <pin peripheral="LPUART1" signal="TX" pin_num="K14" pin_signal="GPIO_AD_B0_12">
-                     <pin_features>
-                        <pin_feature name="software_input_on" value="Disable"/>
-                        <pin_feature name="hysteresis_enable" value="Disable"/>
-                        <pin_feature name="pull_up_down_config" value="Pull_Down_100K_Ohm"/>
-                        <pin_feature name="pull_keeper_select" value="Keeper"/>
-                        <pin_feature name="pull_keeper_enable" value="Enable"/>
-                        <pin_feature name="open_drain" value="Disable"/>
-                        <pin_feature name="speed" value="MHZ_100"/>
-                        <pin_feature name="drive_strength" value="R0_6"/>
-                        <pin_feature name="slew_rate" value="Slow"/>
-                     </pin_features>
-                  </pin>
                   <pin peripheral="ENET" signal="enet_mdc" pin_num="C14" pin_signal="GPIO_B1_14">
                      <pin_features>
                         <pin_feature name="identifier" value="ENET_MDC"/>
@@ -532,10 +501,49 @@
       <periphs name="Peripherals" version="11.0" enabled="false" update_project_code="true">
          <generated_project_files/>
          <peripherals_profile>
-            <processor_version>N/A</processor_version>
+            <processor_version>11.0.1</processor_version>
          </peripherals_profile>
-         <functional_groups/>
-         <components/>
+         <functional_groups>
+            <functional_group name="BOARD_InitPeripherals" uuid="9c9545c8-dbb4-4dca-81f2-42ca2e714e16" called_from_default_init="true" id_prefix="" core="core0">
+               <description></description>
+               <options/>
+               <dependencies/>
+               <instances>
+                  <instance name="NVIC" uuid="712e6d6e-4cd7-4af7-8af7-1d1a8639af84" type="nvic" type_id="nvic_57b5eef3774cc60acaede6f5b8bddc67" mode="general" peripheral="NVIC" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="nvic">
+                        <array name="interrupt_table"/>
+                        <array name="interrupts"/>
+                     </config_set>
+                  </instance>
+               </instances>
+            </functional_group>
+         </functional_groups>
+         <components>
+            <component name="system" uuid="b678d40b-44dd-44c8-966b-8ae626c10f7e" type_id="system_54b53072540eeeb8f8e9343e71f28176">
+               <config_set_global name="global_system_definitions">
+                  <setting name="user_definitions" value=""/>
+                  <setting name="user_includes" value=""/>
+               </config_set_global>
+            </component>
+            <component name="uart_cmsis_common" uuid="ff57f176-18fb-4cfd-9279-0b1628d7487f" type_id="uart_cmsis_common_9cb8e302497aa696fdbb5a4fd622c2a8">
+               <config_set_global name="global_USART_CMSIS_common" quick_selection="default"/>
+            </component>
+            <component name="msg" uuid="376e7c8f-f85f-4276-a662-7e5b60ec0ac3" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
+               <config_set_global name="global_messages"/>
+            </component>
+            <component name="gpio_adapter_common" uuid="c98ecdfb-9fc9-40e6-a0d7-b5f382b15235" type_id="gpio_adapter_common_57579b9ac814fe26bf95df0a384c36b6">
+               <config_set_global name="global_gpio_adapter_common" quick_selection="default"/>
+            </component>
+            <component name="generic_uart" uuid="09845ccb-b553-4702-9a1a-d018a8c110f5" type_id="generic_uart_8cae00565451cf2346eb1b8c624e73a6">
+               <config_set_global name="global_uart"/>
+            </component>
+            <component name="generic_enet" uuid="2c04fa14-276b-46e0-88e1-1f9161341e8e" type_id="generic_enet_74db5c914f0ddbe47d86af40cb77a619">
+               <config_set_global name="global_enet"/>
+            </component>
+            <component name="generic_can" uuid="2bc8dceb-474e-470b-8b83-8b5178615c73" type_id="generic_can_1bfdd78b1af214566c1f23cf6a582d80">
+               <config_set_global name="global_can"/>
+            </component>
+         </components>
       </periphs>
       <tee name="TEE" version="4.0" enabled="false" update_project_code="true">
          <generated_project_files/>
